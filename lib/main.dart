@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:provider/provider.dart';
 import 'package:talk_to_gpt/controller/themeProvider.dart';
 import 'controller/chatProvider.dart';
@@ -7,7 +8,9 @@ import 'presentation/pages/home_page.dart';
 import 'presentation/pages/onboarding_page.dart';
 import 'presentation/pages/splash_page.dart';
 
-void main() {
+Future<void> main() async{
+  await dotenv.load();
+
   runApp(const MyApp());
 }
 

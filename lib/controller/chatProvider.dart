@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter/cupertino.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:talk_to_gpt/model/message.dart';
 
 import '../core/constants.dart';
@@ -66,7 +67,7 @@ class ChatProvider with ChangeNotifier{
         Uri.parse('https://api.openai.com/v1/chat/completions'),
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': 'Bearer ${AppConstants.gptKey}',
+          'Authorization': 'Bearer ${dotenv.env['API_KEY']}',
         },
         body: jsonEncode({
           "model": "gpt-3.5-turbo",
