@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:talk_to_gpt/core/constants.dart';
@@ -19,6 +20,7 @@ class ChatPage extends StatelessWidget {
   final Chat chat;
 
   final _msgController = TextEditingController();
+  final ScrollController controller = ScrollController();
 
   List<Message> msges = [
     Message(txt: 'hello', isSender: 1),
@@ -63,13 +65,15 @@ class ChatPage extends StatelessWidget {
                     child: chatProvider.messages.isEmpty
                         ? Center(
                             child: Text(
-                            'Ask anything, get yout answer',
+                            'Ask anything, get your answer',
                             style: TextStyle(
                                 color: Theme.of(context).dividerColor,
                             fontSize: 16,
                             fontWeight: FontWeight.w600),
                           ))
                         : ListView.builder(
+                      controller: controller,
+                      shrinkWrap: true,
                             itemCount: chatProvider.messages.length,
                             itemBuilder: (context, index) => chatProvider.messages[index].isSender==1
                                 ? senderContainer(context, chatProvider.messages[index])
@@ -77,6 +81,25 @@ class ChatPage extends StatelessWidget {
                           ));
               }
             ),
+        Selector<ChatProvider, bool>(
+            selector: (_, chatProvider) => chatProvider.msgLoading,
+            builder: (context, msgLoading, _) {
+
+              return msgLoading ? Container(
+                alignment: Alignment.centerLeft,
+                child: Container(
+                  padding: const EdgeInsets.all(10),
+                  margin: const EdgeInsets.only(bottom: 10),
+                  decoration: BoxDecoration(
+                      color: Theme.of(context).cardColor,
+                      borderRadius: const BorderRadius.only(
+                          topLeft: Radius.circular(10),
+                          topRight: Radius.circular(10),
+                          bottomRight: Radius.circular(10))),
+                  child: Icon(Icons.more_horiz, color: Theme.of(context).iconTheme.color,),
+                ),
+              ) : Container();
+            }),
             Consumer<ChatProvider>(
                 builder: (context, chatProvider, _) {
                 return Container(
@@ -87,12 +110,19 @@ class ChatPage extends StatelessWidget {
                         borderRadius: BorderRadius.circular(12)),
                     child: MsgField(controller: _msgController, onSend: ()
                     async {
+                      String msg = _msgController.text;
+                      _msgController.clear();
+                      FocusScope.of(context).unfocus();
+
+                      controller.jumpTo(controller.position.maxScrollExtent);
                       await chatProvider.storeMsg(
                           message:
-                              Message(txt: _msgController.text, chatId: chat.id, isSender: 1),
+                              Message(txt: msg, chatId: chat.id, isSender: 1),
                           chat: chat);
 
-                      _msgController.clear();
+                      controller.jumpTo(controller.position.maxScrollExtent);
+
+
                     },));
               }
             )

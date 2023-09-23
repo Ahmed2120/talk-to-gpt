@@ -1,4 +1,4 @@
 class AppConstants{
-  static String gptKey = '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';
+  static String gptKey = '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';
   static String organizationId = 'org-URfp0B70A5B4acunk60IXKay';
 }
