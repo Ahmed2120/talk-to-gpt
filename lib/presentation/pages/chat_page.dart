@@ -14,22 +14,28 @@ import 'package:http/http.dart' as http;
 
 import '../../model/chat.dart';
 
-class ChatPage extends StatelessWidget {
+class ChatPage extends StatefulWidget {
   ChatPage({super.key, required this.chat});
 
   final Chat chat;
 
+  @override
+  State<ChatPage> createState() => _ChatPageState();
+}
+
+class _ChatPageState extends State<ChatPage> {
   final _msgController = TextEditingController();
+
   final ScrollController controller = ScrollController();
 
-  List<Message> msges = [
-    Message(txt: 'hello', isSender: 1),
-    Message(
-        txt:
-            'hi hi hi hi hi hi hi hi hi hi hi hi hello hello hello hello hello hello hello hello hello'),
-    Message(txt: 'hi', isSender: 1),
-    Message(txt: 'hello', isSender: 0),
-  ];
+ @override
+  void initState() {
+    super.initState();
+
+    SchedulerBinding.instance.addPostFrameCallback((_)=>
+
+      controller.jumpTo(controller.position.maxScrollExtent + 210));
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -117,10 +123,10 @@ class ChatPage extends StatelessWidget {
                       controller.jumpTo(controller.position.maxScrollExtent);
                       await chatProvider.storeMsg(
                           message:
-                              Message(txt: msg, chatId: chat.id, isSender: 1),
-                          chat: chat);
+                              Message(txt: msg, chatId: widget.chat.id, isSender: 1),
+                          chat: widget.chat);
 
-                      controller.jumpTo(controller.position.maxScrollExtent);
+                      controller.jumpTo(controller.position.maxScrollExtent + 100);
 
 
                     },));
