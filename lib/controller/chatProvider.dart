@@ -28,8 +28,9 @@ class ChatProvider with ChangeNotifier{
   List<Message> get messages { return _messages;}
 
   storeMsg({required Message message, required Chat chat}) async{
+    print('lllllllllll');
     if(message.txt!.trim().isEmpty) return;
-
+    print('lllllllllll');
     message.id = await _msgRepository.insert(message);
 
     if(message.isSender == 1){

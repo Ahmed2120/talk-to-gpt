@@ -120,7 +120,7 @@ class _ChatPageState extends State<ChatPage> {
                       _msgController.clear();
                       FocusScope.of(context).unfocus();
 
-                      controller.jumpTo(controller.position.maxScrollExtent);
+                      // controller.jumpTo(controller.position.maxScrollExtent);
                       await chatProvider.storeMsg(
                           message:
                               Message(txt: msg, chatId: widget.chat.id, isSender: 1),
