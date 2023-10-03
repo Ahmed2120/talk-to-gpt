@@ -28,13 +28,12 @@ class _ChatPageState extends State<ChatPage> {
 
   final ScrollController controller = ScrollController();
 
- @override
+  @override
   void initState() {
     super.initState();
 
-    SchedulerBinding.instance.addPostFrameCallback((_)=>
-
-      controller.jumpTo(controller.position.maxScrollExtent + 210));
+    SchedulerBinding.instance.addPostFrameCallback(
+        (_) => controller.jumpTo(controller.position.maxScrollExtent + 210));
   }
 
   @override
@@ -56,7 +55,8 @@ class _ChatPageState extends State<ChatPage> {
         ),
         actions: [
           IconButton(
-            icon: Image.asset('assets/icons/Vector.png',color: Theme.of(context).iconTheme.color),
+            icon: Image.asset('assets/icons/Vector.png',
+                color: Theme.of(context).iconTheme.color),
             onPressed: () {},
           )
         ],
@@ -65,73 +65,81 @@ class _ChatPageState extends State<ChatPage> {
         padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 8),
         child: Column(
           children: [
-            Consumer<ChatProvider>(
-                builder: (context, chatProvider, _) {
-                return Expanded(
-                    child: chatProvider.messages.isEmpty
-                        ? Center(
-                            child: Text(
-                            'Ask anything, get your answer',
-                            style: TextStyle(
-                                color: Theme.of(context).dividerColor,
-                            fontSize: 16,
-                            fontWeight: FontWeight.w600),
-                          ))
-                        : ListView.builder(
-                      controller: controller,
-                      shrinkWrap: true,
-                            itemCount: chatProvider.messages.length,
-                            itemBuilder: (context, index) => chatProvider.messages[index].isSender==1
-                                ? senderContainer(context, chatProvider.messages[index])
-                                : receiverContainer(context, chatProvider.messages[index]),
-                          ));
-              }
-            ),
-        Selector<ChatProvider, bool>(
-            selector: (_, chatProvider) => chatProvider.msgLoading,
-            builder: (context, msgLoading, _) {
-
-              return msgLoading ? Container(
-                alignment: Alignment.centerLeft,
-                child: Container(
-                  padding: const EdgeInsets.all(10),
-                  margin: const EdgeInsets.only(bottom: 10),
-                  decoration: BoxDecoration(
-                      color: Theme.of(context).cardColor,
-                      borderRadius: const BorderRadius.only(
-                          topLeft: Radius.circular(10),
-                          topRight: Radius.circular(10),
-                          bottomRight: Radius.circular(10))),
-                  child: Icon(Icons.more_horiz, color: Theme.of(context).iconTheme.color,),
-                ),
-              ) : Container();
+            Consumer<ChatProvider>(builder: (context, chatProvider, _) {
+              return chatProvider.allMsgLoading
+                  ? const Center(
+                      child: CircularProgressIndicator(),
+                    )
+                  : Expanded(
+                      child: chatProvider.messages.isEmpty
+                          ? Center(
+                              child: Text(
+                              'Ask anything, get your answer',
+                              style: TextStyle(
+                                  color: Theme.of(context).dividerColor,
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w600),
+                            ))
+                          : ListView.builder(
+                              controller: controller,
+                              shrinkWrap: true,
+                              itemCount: chatProvider.messages.length,
+                              itemBuilder: (context, index) =>
+                                  chatProvider.messages[index].isSender == 1
+                                      ? senderContainer(
+                                          context, chatProvider.messages[index])
+                                      : receiverContainer(context,
+                                          chatProvider.messages[index]),
+                            ));
             }),
-            Consumer<ChatProvider>(
-                builder: (context, chatProvider, _) {
-                return Container(
-                    padding: const EdgeInsets.all(4),
-                    decoration: BoxDecoration(
-                        // border: Border.all(color: Color(0xFFFFFFFF).withOpacity(0.32),),
-                        color: Theme.of(context).canvasColor,
-                        borderRadius: BorderRadius.circular(12)),
-                    child: MsgField(controller: _msgController, onSend: ()
-                    async {
+            Selector<ChatProvider, bool>(
+                selector: (_, chatProvider) => chatProvider.msgLoading,
+                builder: (context, msgLoading, _) {
+                  return msgLoading
+                      ? Container(
+                          alignment: Alignment.centerLeft,
+                          child: Container(
+                            padding: const EdgeInsets.all(10),
+                            margin: const EdgeInsets.only(bottom: 10),
+                            decoration: BoxDecoration(
+                                color: Theme.of(context).cardColor,
+                                borderRadius: const BorderRadius.only(
+                                    topLeft: Radius.circular(10),
+                                    topRight: Radius.circular(10),
+                                    bottomRight: Radius.circular(10))),
+                            child: Icon(
+                              Icons.more_horiz,
+                              color: Theme.of(context).iconTheme.color,
+                            ),
+                          ),
+                        )
+                      : Container();
+                }),
+            Consumer<ChatProvider>(builder: (context, chatProvider, _) {
+              return Container(
+                  padding: const EdgeInsets.all(4),
+                  decoration: BoxDecoration(
+                      // border: Border.all(color: Color(0xFFFFFFFF).withOpacity(0.32),),
+                      color: Theme.of(context).canvasColor,
+                      borderRadius: BorderRadius.circular(12)),
+                  child: MsgField(
+                    controller: _msgController,
+                    onSend: () async {
                       String msg = _msgController.text;
                       _msgController.clear();
                       FocusScope.of(context).unfocus();
 
                       // controller.jumpTo(controller.position.maxScrollExtent);
                       await chatProvider.storeMsg(
-                          message:
-                              Message(txt: msg, chatId: widget.chat.id, isSender: 1),
+                          message: Message(
+                              txt: msg, chatId: widget.chat.id, isSender: 1),
                           chat: widget.chat);
 
-                      controller.jumpTo(controller.position.maxScrollExtent + 100);
-
-
-                    },));
-              }
-            )
+                      controller
+                          .jumpTo(controller.position.maxScrollExtent + 100);
+                    },
+                  ));
+            })
           ],
         ),
       ),
@@ -202,11 +210,17 @@ class _ChatPageState extends State<ChatPage> {
         ),
         Row(
           children: [
-            Image.asset('assets/icons/like.png', color: Theme.of(context).dividerColor,),
+            Image.asset(
+              'assets/icons/like.png',
+              color: Theme.of(context).dividerColor,
+            ),
             const SizedBox(
               width: 10,
             ),
-            Image.asset('assets/icons/dislike.png', color: Theme.of(context).dividerColor,),
+            Image.asset(
+              'assets/icons/dislike.png',
+              color: Theme.of(context).dividerColor,
+            ),
             const SizedBox(
               width: 30,
             ),
@@ -232,25 +246,24 @@ class _ChatPageState extends State<ChatPage> {
     );
   }
 
-  // send() async{
-  //   final res = await http.post(
-  //     Uri.parse('https://api.openai.com/v1/chat/completions'),
-  //     headers: {
-  //       'Content-Type': 'application/json',
-  //       'Authorization': 'Bearer ${AppConstants.gptKey}',
-  //     },
-  //     body: jsonEncode({
-  //       "model": "gpt-3.5-turbo",
-  //       "messages": [
-  //         {
-  //           'role': 'user',
-  //           'content': 'hello',
-  //         }
-  //       ],
-  //     }),
-  //   );
-  //   print('--------------');
-  //   print(res.body);
-  // }
+// send() async{
+//   final res = await http.post(
+//     Uri.parse('https://api.openai.com/v1/chat/completions'),
+//     headers: {
+//       'Content-Type': 'application/json',
+//       'Authorization': 'Bearer ${AppConstants.gptKey}',
+//     },
+//     body: jsonEncode({
+//       "model": "gpt-3.5-turbo",
+//       "messages": [
+//         {
+//           'role': 'user',
+//           'content': 'hello',
+//         }
+//       ],
+//     }),
+//   );
+//   print('--------------');
+//   print(res.body);
+// }
 }
-

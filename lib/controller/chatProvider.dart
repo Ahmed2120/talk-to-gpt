@@ -21,6 +21,12 @@ class ChatProvider with ChangeNotifier{
 
   bool msgLoading = false;
 
+  bool _allMsgLoading = false;
+  bool get allMsgLoading => _allMsgLoading;
+
+  bool _allchatsLoading = false;
+  bool get allchatsLoading => _allchatsLoading;
+
   List<Chat> _chats = [];
   List<Chat> get chats { return _chats;}
 
@@ -60,10 +66,10 @@ class ChatProvider with ChangeNotifier{
   }
 
   getAssistantMsg(String msg) async{
-    // msgLoading = true;
-    // notifyListeners();
+    msgLoading = true;
+    notifyListeners();
 
-    // try{
+    try{
       final res = await http.post(
         Uri.parse('https://api.openai.com/v1/chat/completions'),
         headers: {
@@ -88,14 +94,14 @@ class ChatProvider with ChangeNotifier{
       print(assistMsg);
       return assistMsg;
 
-      // msgLoading = false;
-      // notifyListeners();
+      msgLoading = false;
+      notifyListeners();
 
-    // }catch(e){
-    //   print(e);
-    //   msgLoading = false;
-    //   notifyListeners();
-    // }
+    }catch(e){
+      print(e);
+      msgLoading = false;
+      notifyListeners();
+    }
 
 
   }
@@ -112,11 +118,22 @@ class ChatProvider with ChangeNotifier{
   }
 
   getMessages(int chatId)async{
+    _allMsgLoading = true;
+    notifyListeners();
+
     _messages = await _msgRepository.retrieveByChatId(chatId);
+
+    _allMsgLoading = false;
+    notifyListeners();
   }
 
   getChats()async{
+    _allchatsLoading = true;
+    notifyListeners();
+
     _chats = await _historyRepository.retrieve();
+
+    _allchatsLoading = false;
     notifyListeners();
   }
 
